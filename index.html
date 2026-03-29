@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>27NOVVIETSUB | Xem Phim Chất Lượng Cao</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap');
+        body { background-color: #080808; color: #fff; font-family: 'Lexend', sans-serif; }
+        .hero-bg {
+            background: linear-gradient(to top, #080808 10%, rgba(8,8,8,0.4) 50%, rgba(8,8,8,0.8) 100%), 
+                        url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1350&q=80');
+            background-size: cover; background-position: center;
+        }
+        .movie-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .movie-card:hover { transform: translateY(-10px); }
+        .movie-card:hover .play-btn { opacity: 1; transform: scale(1); }
+        .glass-nav { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .active-ep { background: linear-gradient(45deg, #e50914, #ff4d4d) !important; color: white !important; border: none !important; box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4); }
+        .hidden { display: none; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #e50914; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <nav class="fixed w-full z-50 px-4 md:px-12 py-3 glass-nav flex justify-between items-center">
+        <div class="flex items-center space-x-10">
+            <div class="text-2xl font-extrabold tracking-tighter text-red-600 cursor-pointer" onclick="showHome()">
+                27NOV<span class="text-white">VIETSUB</span>
+            </div>
+            <div class="hidden lg:flex space-x-6 text-sm font-medium text-gray-400">
+                <a href="#" onclick="showHome()" class="hover:text-white transition">TRANG CHỦ</a>
+                <a href="#" class="hover:text-white transition">PHIM LẺ</a>
+                <a href="#" class="hover:text-white transition">PHIM BỘ</a>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="relative hidden md:block">
+                <input type="text" placeholder="Tìm tên phim..." class="bg-gray-900 border border-gray-800 rounded-full px-5 py-2 text-xs w-64 focus:outline-none focus:border-red-600 transition text-white">
+                <i class="fa-solid fa-magnifying-glass absolute right-4 top-2.5 text-gray-500 text-xs"></i>
+            </div>
+        </div>
+    </nav>
+
+    <main id="home-page">
+        <section class="hero-bg h-[70vh] flex items-center px-6 md:px-20 relative">
+            <div class="max-w-3xl z-10">
+                <h1 class="text-5xl md:text-7xl font-black mb-6 leading-none uppercase">CÔNG THỨC<br><span class="text-red-600">TÌNH YÊU</span></h1>
+                <p class="text-gray-400 text-lg mb-8 max-w-xl leading-relaxed">Bộ phim hot nhất tháng này. Đừng bỏ lỡ hành trình hàn gắn đầy cảm xúc.</p>
+                <button onclick="watchMovie('cong-thuc-tinh-yeu')" class="bg-red-600 hover:bg-red-700 text-white px-10 py-4 rounded-xl font-bold flex items-center transition shadow-2xl shadow-red-900/40">
+                    <i class="fa-solid fa-play mr-3"></i> XEM NGAY
+                </button>
+            </div>
+        </section>
+
+        <section class="px-6 md:px-20 py-16">
+            <h2 class="text-2xl font-extrabold uppercase tracking-wider mb-10">Mới Cập Nhật</h2>
+            <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                </div>
+        </section>
+    </main>
+
+    <main id="watch-page" class="hidden pt-24 px-4 md:px-12 pb-20">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <div class="flex-1">
+                <div class="bg-black rounded-3xl overflow-hidden shadow-2xl border border-gray-800 aspect-video">
+                    <iframe id="main-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="mt-8 bg-gray-900/50 p-6 rounded-3xl border border-gray-800">
+                    <h1 id="m-title" class="text-3xl font-black text-red-600 uppercase italic tracking-tighter"></h1>
+                    <div id="svr-list" class="flex gap-2 mt-4"></div>
+                    <p id="m-desc" class="mt-6 text-gray-400 text-sm leading-relaxed"></p>
+                </div>
+            </div>
+            <div class="w-full lg:w-80">
+                <div class="bg-gray-900/50 rounded-3xl p-6 border border-gray-800">
+                    <h3 class="font-bold text-sm mb-6 uppercase tracking-widest flex items-center">
+                        <span class="w-2 h-2 bg-red-600 rounded-full mr-2"></span> Danh sách tập
+                    </h3>
+                    <div id="ep-list" class="grid grid-cols-4 gap-2 max-h-[500px] overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const db = {
+            'cong-thuc-tinh-yeu': {
+                title: "CÔNG THỨC TÌNH YÊU",
+                year: 2026,
+                desc: "Hai gia đình vướng vào mối quan hệ tồi tệ suốt 30 năm, cùng nhau giải quyết những hiểu lầm.",
+                thumb: "https://img.ophim.live/uploads/movies/cong-thuc-tinh-yeu-thumb.jpg",
+                badge: "Tập 14",
+                servers: {
+                    'Vietsub': [
+                        {n: "1", link: "https://vip.opstream10.com/share/2e41cf896aeb42ae117dbaff02e5f7c7"},
+                        {n: "2", link: "https://vip.opstream10.com/share/2f4933c1afab8024d9f80a42a58c9c67"},
+                        {n: "3", link: "https://vip.opstream10.com/share/251aab366150755ca40df716874ff32e"},
+                        {n: "4", link: "https://vip.opstream10.com/share/576de785f42edab467b8b23a3fb0c168"},
+                        {n: "5", link: "https://vip.opstream10.com/share/f90ea870c8cfa6c7a71d2f4684415f24"},
+                        {n: "6", link: "https://vip.opstream10.com/share/5afbffb77dd6d1701464b76fc7872103"},
+                        {n: "7", link: "https://vip.opstream10.com/share/414a17613b27acc54d1ee7d56cc7346f"},
+                        {n: "8", link: "https://vip.opstream10.com/share/fde673a94858caaadb505ab52c682786"},
+                        {n: "9", link: "https://vip.opstream10.com/share/5d4c7bf4ebab441c07f4fa26c4f0c4c3"},
+                        {n: "10", link: "https://vip.opstream10.com/share/d9ca1ef9c649e555f1ef4ad853f55202"},
+                        {n: "11", link: "https://vip.opstream10.com/share/297b51d372955449d68d0b67ffda8c80"},
+                        {n: "12", link: "https://vip.opstream10.com/share/2742ce8b147db71a731891a3126cc7d3"},
+                        {n: "13", link: "https://vip.opstream10.com/share/1dc76d2e2f98fd1275226368f76f59d3"},
+                        {n: "14", link: "https://vip.opstream10.com/share/30fb29ade62fcc64db06d1001676c913"}
+                    ]
+                }
+            },
+            'boyfriend-on-demand': {
+                title: "BẠN TRAI THEO YÊU CẦU",
+                year: 2026,
+                desc: "Seo Mi-rae trải nghiệm tình yêu ảo thông qua một mối quan hệ kỹ thuật số.",
+                thumb: "https://img.ophim.live/uploads/movies/boyfriend-on-demand-thumb.jpg",
+                badge: "Full 10/10",
+                servers: {
+                    'Vietsub': [
+                        {n: "1", link: "https://vip.opstream90.com/share/572624400295bcd695e277e7a8ae8898"},
+                        {n: "2", link: "https://vip.opstream90.com/share/022a50d5a53f9f27b285e58d37441bdd"},
+                        {n: "3", link: "https://vip.opstream90.com/share/322e03b788964c64c6a1806a36f21daf"},
+                        {n: "4", link: "https://vip.opstream90.com/share/5c11a4c4f713eba0d9643c2ea549afa3"},
+                        {n: "5", link: "https://vip.opstream90.com/share/a8bd559dffc838f2daf9aadf44ca5baf"},
+                        {n: "6", link: "https://vip.opstream90.com/share/958bb6bd458626ce4add509077f3c5df"},
+                        {n: "7", link: "https://vip.opstream90.com/share/e273b4b4631a6f6e22eb40b1df2339e9"},
+                        {n: "8", link: "https://vip.opstream90.com/share/8550c8318d98aa713e0ef7c500981dbc"},
+                        {n: "9", link: "https://vip.opstream90.com/share/df320a984cfb79b17d721a870665cdba"},
+                        {n: "10", link: "https://vip.opstream90.com/share/64a9c037f9a4d1f4ad271611c784a92b"}
+                    ]
+                }
+            },
+            'xin-chao-1983': {
+                title: "XIN CHÀO 1983",
+                year: 2026,
+                desc: "Hành trình xuyên không về thập niên 80.",
+                thumb: "https://img.ophim.live/uploads/movies/xin-chao-1983-thumb.jpg",
+                badge: "Tập 25",
+                servers: {
+                    'Vietsub': Array.from({length: 25}, (_, i) => ({ n: i + 1, link: `https://vip.opstream90.com/share/${['c4eb92c689e6b9728cd42db83ed02bfa','60cef0d656aee7be7b64d3f973a8bc8b','53b884037039b8150835431dd7ed95b0','93d3c9ca6848e71b0aeebec30a3c4072','9b0942e914a19073cf0b3d88ed740c03','f233bf906d15979bcfaa5b92367fbdb3','ce4e66f7f29c8b37eff635378a9b9c0f','273e78ede0ff68fcf04aa41a3dd8d36b','2465caadc8e815625cdcf7c34660bbb7','d35a992032a0224adc8231a4ff1c8330','3e8d386863a55823db6767a73dcdd8f6','da08a1d5b8f673d4ceaad3b9ef9a17de','718866c6b801cac6478a5ad7fbf1d14c','3590f3fb8afe58d458f358b517f9a3e0','5a2abde8196f74354e8a23ba9551d0cc','e619f7a17016c62600bafacfb8e15a6f','2f5c144531b316a819f61e78392e3d6d','caacb032ce3ede8ba6e1999713f29f4c','b1134631cfcd61e4c42f25102802c8f6','1a7f33274089feff1baef7286b95fe0e','3e12d6d201020d2c809f63b8d02161b3','6ca3f7acb8ab6c8ff6123d54c83ab844','afa01e654050008794c59ec41cfd297b','f52a97aeb3db83504088d414ae36a7b9','b5c95f6c18941bc9549eef056c00b7c1'][i]}` })),
+                    'Thuyết Minh': [{n: "1", link: "https://vip.opstream90.com/share/005c03bfd9d4df48aa46f6e6dfb92439"}]
+                }
+            },
+            'bts-su-tro-lai': {
+                title: "BTS: SỰ TRỞ LẠI",
+                year: 2026,
+                desc: "Phim tài liệu hành trình âm nhạc của BTS.",
+                thumb: "https://img.ophim.live/uploads/movies/bts-su-tro-lai-thumb.jpg",
+                badge: "Full",
+                servers: { 'Vietsub': [{n:"Full", link:"https://vip.opstream90.com/share/bf74cbe3722200f6fad86af0b239d900"}] }
+            },
+            'mo-tu-tu': {
+                title: "MỘ TƯ TỪ",
+                year: 2025,
+                desc: "Phim cổ trang huyền huyễn hấp dẫn.",
+                thumb: "https://img.ophim.live/uploads/movies/mo-tu-tu-thumb.jpg",
+                badge: "Tập 4",
+                servers: { 'Vietsub': [
+                    {n:"1", link:"https://vip.opstream90.com/share/a98776f5568f916378bd28d529ab3a33"},
+                    {n:"2", link:"https://vip.opstream90.com/share/8467ae9d40eab0d2e959428e140468ce"},
+                    {n:"3", link:"https://vip.opstream90.com/share/f9e6aa5c93154c16fc5fa8382d8b8de6"},
+                    {n:"4", link:"https://vip.opstream90.com/share/9f74ae56b5c09dc7de09bf4bc0d808a1"}
+                ]}
+            }
+        };
+
+        function renderMovies() {
+            const grid = document.getElementById('movie-grid');
+            grid.innerHTML = '';
+            Object.keys(db).forEach(id => {
+                const movie = db[id];
+                grid.innerHTML += `
+                    <div class="movie-card group cursor-pointer" onclick="watchMovie('${id}')">
+                        <div class="relative aspect-[2/3] rounded-2xl overflow-hidden border border-gray-800">
+                            <img src="${movie.thumb}" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                <div class="play-btn opacity-0 scale-50 transition transform duration-300 bg-red-600 w-12 h-12 rounded-full flex items-center justify-center shadow-xl">
+                                    <i class="fa-solid fa-play text-white"></i>
+                                </div>
+                            </div>
+                            <span class="absolute bottom-3 right-3 bg-red-600 text-[10px] font-bold px-2 py-1 rounded">${movie.badge}</span>
+                        </div>
+                        <div class="mt-4">
+                            <h3 class="font-bold text-sm truncate group-hover:text-red-500 transition">${movie.title}</h3>
+                            <p class="text-gray-500 text-[11px] mt-1">${movie.year}</p>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function watchMovie(id) {
+            const movie = db[id];
+            document.getElementById('m-title').innerText = movie.title;
+            document.getElementById('m-desc').innerText = movie.desc;
+            renderSvr(movie, Object.keys(movie.servers)[0]);
+            document.getElementById('home-page').classList.add('hidden');
+            document.getElementById('watch-page').classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function renderSvr(movie, selectedSvr) {
+            const container = document.getElementById('svr-list');
+            container.innerHTML = '';
+            Object.keys(movie.servers).forEach(svr => {
+                const btn = document.createElement('button');
+                btn.className = `px-3 py-1 rounded-md text-[9px] font-bold uppercase transition ${svr === selectedSvr ? 'active-ep' : 'bg-gray-800 text-gray-500'}`;
+                btn.innerText = svr;
+                btn.onclick = () => renderSvr(movie, svr);
+                container.appendChild(btn);
+            });
+            renderEps(movie.servers[selectedSvr]);
+        }
+
+        function renderEps(eps) {
+            const container = document.getElementById('ep-list');
+            container.innerHTML = '';
+            document.getElementById('main-player').src = eps[0].link;
+            eps.forEach((ep, i) => {
+                const btn = document.createElement('button');
+                btn.className = `bg-gray-800/40 border border-gray-800 py-3 rounded-xl text-xs font-bold hover:border-red-600 transition ${i === 0 ? 'active-ep' : ''}`;
+                btn.innerText = ep.n;
+                btn.onclick = () => {
+                    document.getElementById('main-player').src = ep.link;
+                    document.querySelectorAll('#ep-list button').forEach(b => b.classList.remove('active-ep'));
+                    btn.classList.add('active-ep');
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function showHome() {
+            document.getElementById('home-page').classList.remove('hidden');
+            document.getElementById('watch-page').classList.add('hidden');
+            window.scrollTo(0,0);
+        }
+
+        renderMovies();
+    </script>
+</body>
+</html>
