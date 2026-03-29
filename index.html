@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>27NOVVIETSUB | Xem Phim Chất Lượng Cao</title>
+    <title>27NOVVIETSUB | Hệ Thống Lưu Trữ</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap');
-        body { background-color: #080808; color: #fff; font-family: 'Lexend', sans-serif; }
+         body { background-color: #080808; color: #fff; font-family: 'Lexend', sans-serif; }
         .hero-bg {
             background: linear-gradient(to top, #080808 10%, rgba(8,8,8,0.4) 50%, rgba(8,8,8,0.8) 100%), 
                         url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1350&q=80');
@@ -25,154 +25,165 @@
     </style>
 </head>
 <body>
-
     <nav class="fixed w-full z-50 px-4 md:px-12 py-3 glass-nav flex justify-between items-center">
-        <div class="flex items-center space-x-10">
-            <div class="text-2xl font-extrabold tracking-tighter text-red-600 cursor-pointer" onclick="showHome()">
-                27NOV<span class="text-white">VIETSUB</span>
-            </div>
-            <div class="hidden lg:flex space-x-6 text-sm font-medium text-gray-400">
-                <a href="#" onclick="showHome()" class="hover:text-white transition">TRANG CHỦ</a>
-            </div>
+        <div class="text-2xl font-extrabold text-red-600 cursor-pointer" onclick="showHome()">
+            27NOV<span class="text-white">VIETSUB</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <input type="date" id="date-picker" class="bg-gray-900 text-white text-xs p-2 rounded border border-gray-700">
+            <button onclick="loadByDate()" class="bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold px-4 py-2 rounded uppercase">Xem Theo Ngày</button>
         </div>
     </nav>
 
-    <main id="home-page">
+  <main id="home-page">
         <section class="hero-bg h-[60vh] flex items-center px-6 md:px-20 relative">
             <div class="max-w-3xl z-10">
                 <h1 class="text-5xl md:text-7xl font-black mb-6 leading-none uppercase">KHO PHIM<br><span class="text-red-600">VIETSUB</span></h1>
                 <p class="text-gray-400 text-lg mb-8 max-w-xl">Tổng hợp những bộ phim mới nhất, cập nhật liên tục mỗi ngày.</p>
+                
             </div>
         </section>
 
         <section class="px-6 md:px-20 py-16">
             <h2 class="text-2xl font-extrabold uppercase tracking-wider mb-10">Danh Sách Phim</h2>
-            <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"></div>
+            <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                </div>
+            <div id="pagination-area" class="flex justify-center mt-12">
+                <button id="load-more-btn" onclick="loadNextPage()" class="bg-gray-900 border border-gray-800 text-white px-8 py-3 rounded-full hover:border-red-600 transition">
+      Xem thêm phim cũ hơn
+                </button>
+            </div>
         </section>
     </main>
 
     <main id="watch-page" class="hidden pt-24 px-4 md:px-12 pb-20">
         <div class="flex flex-col lg:flex-row gap-8">
             <div class="flex-1">
-                <div class="bg-black rounded-3xl overflow-hidden shadow-2xl border border-gray-800 aspect-video">
+                <div class="bg-black rounded-3xl overflow-hidden aspect-video border border-gray-800">
                     <iframe id="main-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
                 </div>
-                <div class="mt-8 bg-gray-900/50 p-6 rounded-3xl border border-gray-800">
-                    <h1 id="m-title" class="text-3xl font-black text-red-600 uppercase italic tracking-tighter"></h1>
-                    <div id="svr-list" class="flex gap-2 mt-4"></div>
-                    <p id="m-desc" class="mt-6 text-gray-400 text-sm leading-relaxed"></p>
+                <div class="mt-6 p-6 bg-gray-900/50 rounded-3xl">
+                    <h1 id="m-title" class="text-2xl font-black text-red-600 uppercase"></h1>
+                    <p id="m-desc" class="mt-4 text-gray-400 text-sm leading-relaxed"></p>
                 </div>
             </div>
             <div class="w-full lg:w-80">
                 <div class="bg-gray-900/50 rounded-3xl p-6 border border-gray-800">
-                    <h3 class="font-bold text-sm mb-6 uppercase tracking-widest flex items-center">
-                        <span class="w-2 h-2 bg-red-600 rounded-full mr-2"></span> Tập Phim
-                    </h3>
-                    <div id="ep-list" class="grid grid-cols-4 gap-2 max-h-[500px] overflow-y-auto pr-2"></div>
+                    <h3 class="font-bold text-sm mb-4">DANH SÁCH TẬP</h3>
+                    <div id="ep-list" class="grid grid-cols-4 gap-2"></div>
                 </div>
             </div>
         </div>
     </main>
+
 <script>
-    // 1. Cấu hình các đường dẫn API từ nguồn Ophim
-    const API_LIST = "https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=1";
+    // CẤU HÌNH (THAY USERNAME CỦA BẠN VÀO ĐÂY)
+    const GH_USER = "chiasefile9-source"; 
+    const GH_REPO = "movie-archive";
+    const API_BASE = "https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=";
     const API_DETAIL = "https://ophim1.com/phim/";
-    const IMAGE_HOST = "https://img.ophim.live/uploads/movies/";
+    const IMG_HOST = "https://img.ophim.live/uploads/movies/";
 
-    // 2. Hàm lấy danh sách phim hiển thị ra Trang Chủ
-    async function renderMovies() {
+    let currentPage = 1;
+
+    // 1. Hàm hiển thị danh sách phim
+    async function renderMovies(page = 1, append = false) {
         const grid = document.getElementById('movie-grid');
-        grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500 animate-pulse">Đang kết nối máy chủ phim...</div>';
-
         try {
-            const response = await fetch(API_LIST);
-            const data = await response.json();
-            const movies = data.items;
-
-            grid.innerHTML = ''; // Xóa trạng thái đang tải
+            const res = await fetch(`${API_BASE}${page}`);
+            const data = await res.json();
+            if(!append) grid.innerHTML = '';
             
-            movies.forEach(movie => {
-                grid.innerHTML += `
-                    <div class="movie-card group cursor-pointer" onclick="watchMovie('${movie.slug}')">
-                        <div class="relative aspect-[2/3] rounded-2xl overflow-hidden border border-gray-800 bg-gray-900">
-                            <img src="${IMAGE_HOST}${movie.thumb_url}" class="w-full h-full object-cover" loading="lazy">
-                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                                <div class="play-btn opacity-0 scale-50 transition transform duration-300 bg-red-600 w-12 h-12 rounded-full flex items-center justify-center shadow-xl">
-                                    <i class="fa-solid fa-play text-white"></i>
-                                </div>
-                            </div>
-                            <span class="absolute bottom-3 right-3 bg-red-600 text-[10px] font-bold px-2 py-1 rounded shadow-lg">
-                                ${movie.episode_current}
-                            </span>
-                        </div>
-                        <div class="mt-4">
-                            <h3 class="font-bold text-[13px] truncate group-hover:text-red-500 transition uppercase tracking-tight">${movie.name}</h3>
-                            <p class="text-gray-500 text-[11px] mt-1">${movie.year} • ${movie.lang}</p>
-                        </div>
-                    </div>`;
+            data.items.forEach(movie => {
+                grid.innerHTML += createMovieHTML(movie);
             });
-        } catch (error) {
-            grid.innerHTML = '<div class="col-span-full text-center text-red-500">Không thể tải danh sách phim. Vui lòng kiểm tra kết nối mạng!</div>';
-        }
+        } catch (e) { console.error("Lỗi tải phim"); }
     }
 
-    // 3. Hàm lấy chi tiết phim và link Vietsub khi nhấn vào phim
-    async function watchMovie(slug) {
-        try {
-            const response = await fetch(`${API_DETAIL}${slug}`);
-            const data = await response.json();
-            const movie = data.movie;
-            const episodes = data.episodes[0].server_data; // Lấy server đầu tiên
+    // 2. Hàm lấy phim từ KHO LƯU TRỮ GITHUB theo ngày
+    async function loadByDate() {
+        const date = document.getElementById('date-picker').value;
+        if(!date) return alert("Chọn ngày đã!");
 
-            // Cập nhật thông tin phim
-            document.getElementById('m-title').innerText = movie.name;
-            document.getElementById('m-desc').innerHTML = movie.content; // Hiển thị nội dung phim
-            
-            // Hiển thị danh sách tập
-            renderEps(episodes);
-
-            // Chuyển trang
-            document.getElementById('home-page').classList.add('hidden');
-            document.getElementById('watch-page').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } catch (error) {
-            alert("Lỗi: Không thể lấy link phim này!");
-        }
-    }
-
-    // 4. Hàm hiển thị các nút chọn tập phim (1, 2, 3...)
-    function renderEps(eps) {
-        const container = document.getElementById('ep-list');
-        container.innerHTML = '';
+        const grid = document.getElementById('movie-grid');
+        const title = document.getElementById('grid-title');
+        const pagination = document.getElementById('pagination-area');
         
-        // Tự động phát tập đầu tiên (dùng link_embed để chạy trong iframe)
+        grid.innerHTML = '<div class="col-span-full text-center">Đang tìm trong kho lưu trữ...</div>';
+        
+        const url = `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/data/${date}.json`;
+
+        try {
+            const res = await fetch(url);
+            if(!res.ok) throw new Error();
+            const movies = await res.json();
+            
+            grid.innerHTML = '';
+            title.innerText = `Phim cập nhật ngày ${date}`;
+            pagination.classList.add('hidden'); // Ẩn nút xem thêm khi xem theo ngày
+            
+            movies.forEach(movie => { grid.innerHTML += createMovieHTML(movie); });
+        } catch (e) {
+            grid.innerHTML = '<div class="col-span-full text-center text-red-500">Ngày này chưa được lưu trữ hoặc chưa có phim!</div>';
+        }
+    }
+
+    // 3. Hàm tạo HTML cho thẻ phim
+    function createMovieHTML(movie) {
+        return `
+            <div class="movie-card group cursor-pointer transition-all duration-300" onclick="watchMovie('${movie.slug}')">
+                <div class="relative aspect-[2/3] rounded-2xl overflow-hidden border border-gray-800 bg-gray-900">
+                    <img src="${IMG_HOST}${movie.thumb_url}" class="w-full h-full object-cover" loading="lazy">
+                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                        <i class="fa-solid fa-play text-white text-2xl"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <h3 class="font-bold text-[12px] truncate uppercase text-gray-200">${movie.name}</h3>
+                    <p class="text-[10px] text-gray-500 mt-1">${movie.year}</p>
+                </div>
+            </div>`;
+    }
+
+    // 4. Logic xem phim và tập phim
+    async function watchMovie(slug) {
+        const res = await fetch(`${API_DETAIL}${slug}`);
+        const data = await res.json();
+        const m = data.movie;
+        const eps = data.episodes[0].server_data;
+
+        document.getElementById('m-title').innerText = m.name;
+        document.getElementById('m-desc').innerHTML = m.content;
         document.getElementById('main-player').src = eps[0].link_embed;
 
+        const epList = document.getElementById('ep-list');
+        epList.innerHTML = '';
         eps.forEach((ep, i) => {
             const btn = document.createElement('button');
-            btn.className = `bg-gray-800/40 border border-gray-800 py-3 rounded-xl text-xs font-bold hover:border-red-600 transition ${i === 0 ? 'active-ep' : ''}`;
+            btn.className = `bg-gray-800 py-2 rounded text-[10px] font-bold ${i===0?'active-ep':''}`;
             btn.innerText = ep.name;
-            
             btn.onclick = () => {
                 document.getElementById('main-player').src = ep.link_embed;
-                // Xóa màu đỏ ở các nút khác, thêm màu đỏ vào nút vừa nhấn
                 document.querySelectorAll('#ep-list button').forEach(b => b.classList.remove('active-ep'));
                 btn.classList.add('active-ep');
             };
-            container.appendChild(btn);
+            epList.appendChild(btn);
         });
+
+        document.getElementById('home-page').classList.add('hidden');
+        document.getElementById('watch-page').classList.remove('hidden');
+        window.scrollTo(0,0);
     }
 
-    // 5. Hàm quay về Trang Chủ
-    function showHome() {
+    function loadNextPage() { currentPage++; renderMovies(currentPage, true); }
+    function showHome() { 
         document.getElementById('home-page').classList.remove('hidden');
         document.getElementById('watch-page').classList.add('hidden');
-        document.getElementById('main-player').src = ""; // Dừng phim khi thoát ra ngoài
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('grid-title').innerText = "Phim Mới Cập Nhật";
+        document.getElementById('pagination-area').classList.remove('hidden');
     }
 
-    // Chạy hàm lấy phim ngay khi trang web sẵn sàng
-    renderMovies();
+    renderMovies(); // Chạy lần đầu
 </script>
 </body>
 </html>
