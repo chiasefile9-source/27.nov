@@ -33,33 +33,21 @@
             </div>
             <div class="hidden lg:flex space-x-6 text-sm font-medium text-gray-400">
                 <a href="#" onclick="showHome()" class="hover:text-white transition">TRANG CHỦ</a>
-                <a href="#" class="hover:text-white transition">PHIM LẺ</a>
-                <a href="#" class="hover:text-white transition">PHIM BỘ</a>
-            </div>
-        </div>
-        <div class="flex items-center space-x-4">
-            <div class="relative hidden md:block">
-                <input type="text" placeholder="Tìm tên phim..." class="bg-gray-900 border border-gray-800 rounded-full px-5 py-2 text-xs w-64 focus:outline-none focus:border-red-600 transition text-white">
-                <i class="fa-solid fa-magnifying-glass absolute right-4 top-2.5 text-gray-500 text-xs"></i>
             </div>
         </div>
     </nav>
 
     <main id="home-page">
-        <section class="hero-bg h-[70vh] flex items-center px-6 md:px-20 relative">
+        <section class="hero-bg h-[60vh] flex items-center px-6 md:px-20 relative">
             <div class="max-w-3xl z-10">
-                <h1 class="text-5xl md:text-7xl font-black mb-6 leading-none uppercase">CÔNG THỨC<br><span class="text-red-600">TÌNH YÊU</span></h1>
-                <p class="text-gray-400 text-lg mb-8 max-w-xl leading-relaxed">Bộ phim hot nhất tháng này. Đừng bỏ lỡ hành trình hàn gắn đầy cảm xúc.</p>
-                <button onclick="watchMovie('cong-thuc-tinh-yeu')" class="bg-red-600 hover:bg-red-700 text-white px-10 py-4 rounded-xl font-bold flex items-center transition shadow-2xl shadow-red-900/40">
-                    <i class="fa-solid fa-play mr-3"></i> XEM NGAY
-                </button>
+                <h1 class="text-5xl md:text-7xl font-black mb-6 leading-none uppercase">KHO PHIM<br><span class="text-red-600">VIETSUB</span></h1>
+                <p class="text-gray-400 text-lg mb-8 max-w-xl">Tổng hợp những bộ phim mới nhất, cập nhật liên tục mỗi ngày.</p>
             </div>
         </section>
 
         <section class="px-6 md:px-20 py-16">
-            <h2 class="text-2xl font-extrabold uppercase tracking-wider mb-10">Mới Cập Nhật</h2>
-            <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                </div>
+            <h2 class="text-2xl font-extrabold uppercase tracking-wider mb-10">Danh Sách Phim</h2>
+            <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"></div>
         </section>
     </main>
 
@@ -78,7 +66,7 @@
             <div class="w-full lg:w-80">
                 <div class="bg-gray-900/50 rounded-3xl p-6 border border-gray-800">
                     <h3 class="font-bold text-sm mb-6 uppercase tracking-widest flex items-center">
-                        <span class="w-2 h-2 bg-red-600 rounded-full mr-2"></span> Danh sách tập
+                        <span class="w-2 h-2 bg-red-600 rounded-full mr-2"></span> Tập Phim
                     </h3>
                     <div id="ep-list" class="grid grid-cols-4 gap-2 max-h-[500px] overflow-y-auto pr-2"></div>
                 </div>
@@ -88,10 +76,76 @@
 
     <script>
         const db = {
+            'nhat-ky-song-cham': {
+                title: "NHẬT KÝ SỐNG CHẬM NƠI DỊ GIỚI",
+                year: 2024,
+                desc: "Hành trình nuôi con đầy thú vị tại thế giới dị giới của mạo hiểm giả Takumi.",
+                thumb: "https://img.ophim.live/uploads/movies/nhat-ky-song-cham-noi-di-gioi-nuoi-con-trong-luc-lam-mao-hiem-gia-thumb.jpg",
+                badge: "Full 12/12",
+                servers: {
+                    'Vietsub': [
+                        {n: "1", link: "https://vip.opstream90.com/share/c699a38d88e2499b4e47f02534c2a4d8"},
+                        {n: "2", link: "https://vip.opstream90.com/share/27b9dd458e2e9db816115c8cff4b7f8f"},
+                        {n: "3", link: "https://vip.opstream90.com/share/d62e62abe24dcaa94f9e1b3678477b51"},
+                        {n: "4", link: "https://vip.opstream90.com/share/24a13b72fc2a34c2eb4d78dfb243b712"},
+                        {n: "5", link: "https://vip.opstream90.com/share/567ed37f3e011ed702bbf9d2631a1565"},
+                        {n: "6", link: "https://vip.opstream90.com/share/6e5abe0d4fa331e82877a04cc0ea52dd"},
+                        {n: "7", link: "https://vip.opstream90.com/share/5f448492911af2123c1a32544b82f572"},
+                        {n: "8", link: "https://vip.opstream90.com/share/edd54da0c47e2284ba384383dc0e44ea"},
+                        {n: "9", link: "https://vip.opstream90.com/share/79a22811a90cc52e8ac0f5c0b42f6393"},
+                        {n: "10", link: "https://vip.opstream90.com/share/22c9c13f11355d93ee0cc26ce01585c9"},
+                        {n: "11", link: "https://vip.opstream90.com/share/e80d4e20bea58e20d925e45e6fb7aab8"},
+                        {n: "12", link: "https://vip.opstream90.com/share/4a3ef7e06bb4020500bbd7e86dc71429"}
+                    ]
+                }
+            },
+            'nu-phan-dien-hoang-tu': {
+                title: "NỮ PHẢN DIỆN ĐƯỢC HOÀNG TỬ",
+                year: 2026,
+                desc: "Câu chuyện tình yêu của nàng nữ phụ phản diện và hoàng tử nước láng giềng.",
+                thumb: "https://img.ophim.live/uploads/movies/nu-phan-dien-duoc-hoang-tu-nuoc-lang-gieng-yeu-men-thumb.jpg",
+                badge: "Tập 11",
+                servers: {
+                    'Vietsub': [
+                        {n: "1", link: "https://vip.opstream90.com/share/7bc902d4d27006cef0abade4a1b80b3e"},
+                        {n: "2", link: "https://vip.opstream90.com/share/68b7407a2379f6a314b9c0730f1864d5"},
+                        {n: "3", link: "https://vip.opstream90.com/share/c56491fecc8c073d6c811b69a3ab6539"},
+                        {n: "4", link: "https://vip.opstream90.com/share/64055d56367c68545b1ad9b86faee20c"},
+                        {n: "5", link: "https://vip.opstream90.com/share/c481ea1fe4aae0944dbc6cafb5dec786"},
+                        {n: "6", link: "https://vip.opstream90.com/share/99f437d56c43aa49b37af39678cd04e7"},
+                        {n: "7", link: "https://vip.opstream90.com/share/9a469156f5e380345f69dba2862d44e0"},
+                        {n: "8", link: "https://vip.opstream90.com/share/b4c740208036d64c467b9cb682edb0c5"},
+                        {n: "9", link: "https://vip.opstream90.com/share/f54b03e4f11c8bd9920741657069c6b6"},
+                        {n: "10", link: "https://vip.opstream90.com/share/16d2f0261ca016147cc669463939626e"},
+                        {n: "11", link: "https://vip.opstream90.com/share/07e868c2ed7754b20468357f8475269d"}
+                    ]
+                }
+            },
+            'hana-kimi': {
+                title: "HANA-KIMI (2026)",
+                year: 2026,
+                desc: "Nữ giả nam sinh vào trường nam sinh để tiếp cận thần tượng nhảy cao.",
+                thumb: "https://img.ophim.live/uploads/movies/hana-kimi-thumb.jpg",
+                badge: "Tập 10",
+                servers: {
+                    'Vietsub': [
+                        {n: "1", link: "https://vip.opstream90.com/share/73c4d7e008f75c24e6a88b52f14c2755"},
+                        {n: "2", link: "https://vip.opstream90.com/share/07c146d90d8100085a210772718e001f"},
+                        {n: "3", link: "https://vip.opstream90.com/share/67a3a82414878a46b9a2c358f28c5311"},
+                        {n: "4", link: "https://vip.opstream90.com/share/a020f666f4cc9735d4791e25e9e51c11"},
+                        {n: "5", link: "https://vip.opstream90.com/share/2d88185c78f1610e7ca10620808803ec"},
+                        {n: "6", link: "https://vip.opstream90.com/share/be232670d06cc945ec3791a815598d1a"},
+                        {n: "7", link: "https://vip.opstream90.com/share/5e491d66377606ec44c27564123ab511"},
+                        {n: "8", link: "https://vip.opstream90.com/share/7e4ddecd5564e9fe8a83e41821797ca3"},
+                        {n: "9", link: "https://vip.opstream90.com/share/488587661159cc09858593a4087e2716"},
+                        {n: "10", link: "https://vip.opstream90.com/share/b51829e924ca60d4d2919d7768a18355"}
+                    ]
+                }
+            },
             'cong-thuc-tinh-yeu': {
                 title: "CÔNG THỨC TÌNH YÊU",
                 year: 2026,
-                desc: "Hai gia đình vướng vào mối quan hệ tồi tệ suốt 30 năm, cùng nhau giải quyết những hiểu lầm.",
+                desc: "Hành trình hàn gắn tình cảm giữa hai gia đình đối đầu suốt 30 năm.",
                 thumb: "https://img.ophim.live/uploads/movies/cong-thuc-tinh-yeu-thumb.jpg",
                 badge: "Tập 14",
                 servers: {
@@ -116,7 +170,7 @@
             'boyfriend-on-demand': {
                 title: "BẠN TRAI THEO YÊU CẦU",
                 year: 2026,
-                desc: "Seo Mi-rae trải nghiệm tình yêu ảo thông qua một mối quan hệ kỹ thuật số.",
+                desc: "Seo Mi-rae trải nghiệm tình yêu kỹ thuật số ảo.",
                 thumb: "https://img.ophim.live/uploads/movies/boyfriend-on-demand-thumb.jpg",
                 badge: "Full 10/10",
                 servers: {
@@ -137,18 +191,44 @@
             'xin-chao-1983': {
                 title: "XIN CHÀO 1983",
                 year: 2026,
-                desc: "Hành trình xuyên không về thập niên 80.",
+                desc: "Xuyên không về thập niên 80.",
                 thumb: "https://img.ophim.live/uploads/movies/xin-chao-1983-thumb.jpg",
                 badge: "Tập 25",
                 servers: {
-                    'Vietsub': Array.from({length: 25}, (_, i) => ({ n: i + 1, link: `https://vip.opstream90.com/share/${['c4eb92c689e6b9728cd42db83ed02bfa','60cef0d656aee7be7b64d3f973a8bc8b','53b884037039b8150835431dd7ed95b0','93d3c9ca6848e71b0aeebec30a3c4072','9b0942e914a19073cf0b3d88ed740c03','f233bf906d15979bcfaa5b92367fbdb3','ce4e66f7f29c8b37eff635378a9b9c0f','273e78ede0ff68fcf04aa41a3dd8d36b','2465caadc8e815625cdcf7c34660bbb7','d35a992032a0224adc8231a4ff1c8330','3e8d386863a55823db6767a73dcdd8f6','da08a1d5b8f673d4ceaad3b9ef9a17de','718866c6b801cac6478a5ad7fbf1d14c','3590f3fb8afe58d458f358b517f9a3e0','5a2abde8196f74354e8a23ba9551d0cc','e619f7a17016c62600bafacfb8e15a6f','2f5c144531b316a819f61e78392e3d6d','caacb032ce3ede8ba6e1999713f29f4c','b1134631cfcd61e4c42f25102802c8f6','1a7f33274089feff1baef7286b95fe0e','3e12d6d201020d2c809f63b8d02161b3','6ca3f7acb8ab6c8ff6123d54c83ab844','afa01e654050008794c59ec41cfd297b','f52a97aeb3db83504088d414ae36a7b9','b5c95f6c18941bc9549eef056c00b7c1'][i]}` })),
+                    'Vietsub': [
+                        {n:"1", link:"https://vip.opstream90.com/share/c4eb92c689e6b9728cd42db83ed02bfa"},
+                        {n:"2", link:"https://vip.opstream90.com/share/60cef0d656aee7be7b64d3f973a8bc8b"},
+                        {n:"3", link:"https://vip.opstream90.com/share/53b884037039b8150835431dd7ed95b0"},
+                        {n:"4", link:"https://vip.opstream90.com/share/93d3c9ca6848e71b0aeebec30a3c4072"},
+                        {n:"5", link:"https://vip.opstream90.com/share/9b0942e914a19073cf0b3d88ed740c03"},
+                        {n:"6", link:"https://vip.opstream90.com/share/f233bf906d15979bcfaa5b92367fbdb3"},
+                        {n:"7", link:"https://vip.opstream90.com/share/ce4e66f7f29c8b37eff635378a9b9c0f"},
+                        {n:"8", link:"https://vip.opstream90.com/share/273e78ede0ff68fcf04aa41a3dd8d36b"},
+                        {n:"9", link:"https://vip.opstream90.com/share/2465caadc8e815625cdcf7c34660bbb7"},
+                        {n:"10", link:"https://vip.opstream90.com/share/d35a992032a0224adc8231a4ff1c8330"},
+                        {n:"11", link:"https://vip.opstream90.com/share/3e8d386863a55823db6767a73dcdd8f6"},
+                        {n:"12", link:"https://vip.opstream90.com/share/da08a1d5b8f673d4ceaad3b9ef9a17de"},
+                        {n:"13", link:"https://vip.opstream90.com/share/718866c6b801cac6478a5ad7fbf1d14c"},
+                        {n:"14", link:"https://vip.opstream90.com/share/3590f3fb8afe58d458f358b517f9a3e0"},
+                        {n:"15", link:"https://vip.opstream90.com/share/5a2abde8196f74354e8a23ba9551d0cc"},
+                        {n:"16", link:"https://vip.opstream90.com/share/e619f7a17016c62600bafacfb8e15a6f"},
+                        {n:"17", link:"https://vip.opstream90.com/share/2f5c144531b316a819f61e78392e3d6d"},
+                        {n:"18", link:"https://vip.opstream90.com/share/caacb032ce3ede8ba6e1999713f29f4c"},
+                        {n:"19", link:"https://vip.opstream90.com/share/b1134631cfcd61e4c42f25102802c8f6"},
+                        {n:"20", link:"https://vip.opstream90.com/share/1a7f33274089feff1baef7286b95fe0e"},
+                        {n:"21", link:"https://vip.opstream90.com/share/3e12d6d201020d2c809f63b8d02161b3"},
+                        {n:"22", link:"https://vip.opstream90.com/share/6ca3f7acb8ab6c8ff6123d54c83ab844"},
+                        {n:"23", link:"https://vip.opstream90.com/share/afa01e654050008794c59ec41cfd297b"},
+                        {n:"24", link:"https://vip.opstream90.com/share/f52a97aeb3db83504088d414ae36a7b9"},
+                        {n:"25", link:"https://vip.opstream90.com/share/b5c95f6c18941bc9549eef056c00b7c1"}
+                    ],
                     'Thuyết Minh': [{n: "1", link: "https://vip.opstream90.com/share/005c03bfd9d4df48aa46f6e6dfb92439"}]
                 }
             },
             'bts-su-tro-lai': {
                 title: "BTS: SỰ TRỞ LẠI",
                 year: 2026,
-                desc: "Phim tài liệu hành trình âm nhạc của BTS.",
+                desc: "Hành trình âm nhạc của BTS.",
                 thumb: "https://img.ophim.live/uploads/movies/bts-su-tro-lai-thumb.jpg",
                 badge: "Full",
                 servers: { 'Vietsub': [{n:"Full", link:"https://vip.opstream90.com/share/bf74cbe3722200f6fad86af0b239d900"}] }
@@ -156,7 +236,7 @@
             'mo-tu-tu': {
                 title: "MỘ TƯ TỪ",
                 year: 2025,
-                desc: "Phim cổ trang huyền huyễn hấp dẫn.",
+                desc: "Phim cổ trang huyền huyễn.",
                 thumb: "https://img.ophim.live/uploads/movies/mo-tu-tu-thumb.jpg",
                 badge: "Tập 4",
                 servers: { 'Vietsub': [
