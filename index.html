@@ -3,187 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>27NOVVIETSUB | Hệ Thống Lưu Trữ</title>
+    <title>27NOVVIETSUB | Xem Phim Mỗi Ngày</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap');
-         body { background-color: #080808; color: #fff; font-family: 'Lexend', sans-serif; }
-        .hero-bg {
-            background: linear-gradient(to top, #080808 10%, rgba(8,8,8,0.4) 50%, rgba(8,8,8,0.8) 100%), 
-                        url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1350&q=80');
-            background-size: cover; background-position: center;
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        :root { --primary: #e50914; --bg: #0a0a0a; }
+        body { background-color: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; overflow-x: hidden; }
+        
+        .glass-nav {
+            background: rgba(10, 10, 10, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            min-height: 80px; display: flex; align-items: center;
         }
-        .movie-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .content-wrapper { padding-top: 100px; }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+        .search-box:focus-within { border-color: var(--primary); background: rgba(255, 255, 255, 0.15); }
+
+        .movie-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; }
         .movie-card:hover { transform: translateY(-10px); }
-        .movie-card:hover .play-btn { opacity: 1; transform: scale(1); }
-        .glass-nav { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .active-ep { background: linear-gradient(45deg, #e50914, #ff4d4d) !important; color: white !important; border: none !important; box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4); }
-        .hidden { display: none; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #e50914; border-radius: 10px; }
+        
+        .active-ep { background: var(--primary) !important; border: none !important; box-shadow: 0 4px 15px rgba(229, 9, 20, 0.5); }
+
+        .hero-gradient {
+            background: linear-gradient(to top, var(--bg) 0%, rgba(10,10,10,0.6) 100%), 
+                        url('https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?auto=format&fit=crop&w=1350&q=80');
+            background-size: cover; background-position: center;
+            border-radius: 24px; margin: 0 20px;
+        }
+
+        .hidden { display: none !important; }
+        .animate-fade { animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
     </style>
 </head>
 <body>
-    <nav class="fixed w-full z-50 px-4 md:px-12 py-3 glass-nav flex justify-between items-center">
-        <div class="text-2xl font-extrabold text-red-600 cursor-pointer" onclick="showHome()">
-            27NOV<span class="text-white">VIETSUB</span>
+
+    <div id="notification-modal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center px-4 bg-black/80 backdrop-blur-md">
+        <div class="bg-[#151515] border border-white/10 w-full max-w-md rounded-[32px] p-8 shadow-2xl animate-fade text-center">
+            <div class="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-clapperboard text-red-600 text-2xl animate-pulse"></i>
+            </div>
+            <h3 class="text-2xl font-black uppercase tracking-tight mb-3">Chào mừng bạn!</h3>
+            <p id="notify-content" class="text-gray-400 text-sm leading-relaxed mb-8 px-4">
+                Đang kiểm tra cập nhật phim mới nhất...
+            </p>
+            <button onclick="closeNotify()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-2xl transition-all uppercase text-xs tracking-widest shadow-lg shadow-red-600/30">
+                Bắt đầu xem phim
+            </button>
         </div>
-        <div class="flex items-center gap-4">
-            <input type="date" id="date-picker" class="bg-gray-900 text-white text-xs p-2 rounded border border-gray-700">
-            <button onclick="loadByDate()" class="bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold px-4 py-2 rounded uppercase">Xem Theo Ngày</button>
+    </div>
+
+    <nav class="glass-nav">
+        <div class="container mx-auto px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6 py-4 md:py-0">
+            <div class="text-2xl md:text-3xl font-extrabold tracking-tighter text-red-600 cursor-pointer flex items-center gap-3" onclick="backToHome()">
+                <i class="fa-solid fa-circle-play text-4xl"></i>
+                <span class="flex items-center">27NOV<span class="text-white ml-1">VIETSUB</span></span>
+            </div>
+            
+            <div class="w-full md:w-[450px]">
+                <div class="search-box flex items-center px-5 py-2.5 rounded-full">
+                    <i class="fa-solid fa-magnifying-glass text-gray-500 mr-3"></i>
+                    <input type="text" id="search-input" placeholder="Tìm kiếm phim..." class="bg-transparent text-sm text-white focus:outline-none w-full" onkeyup="if(event.key === 'Enter') searchMovies()">
+                    <button onclick="searchMovies()" class="ml-2 text-[11px] bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full font-bold uppercase transition-all">Tìm</button>
+                </div>
+            </div>
         </div>
     </nav>
 
-  <main id="home-page">
-        <section class="hero-bg h-[60vh] flex items-center px-6 md:px-20 relative">
-            <div class="max-w-3xl z-10">
-                <h1 class="text-5xl md:text-7xl font-black mb-6 leading-none uppercase">KHO PHIM<br><span class="text-red-600">VIETSUB</span></h1>
-                <p class="text-gray-400 text-lg mb-8 max-w-xl">Tổng hợp những bộ phim mới nhất, cập nhật liên tục mỗi ngày.</p>
-                
-            </div>
-        </section>
-
-        <section class="px-6 md:px-20 py-16">
-            <h2 class="text-2xl font-extrabold uppercase tracking-wider mb-10">Danh Sách Phim</h2>
-            <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+    <div class="content-wrapper">
+        <main id="home-page" class="animate-fade">
+            <section id="hero-section" class="hero-gradient h-[35vh] flex items-center px-8 md:px-20">
+                <div class="max-w-2xl">
+                    <h1 class="text-4xl md:text-6xl font-black uppercase leading-tight tracking-tighter">Phim Mới <br><span class="text-red-600">Mỗi Ngày</span></h1>
                 </div>
-            <div id="pagination-area" class="flex justify-center mt-12">
-                <button id="load-more-btn" onclick="loadNextPage()" class="bg-gray-900 border border-gray-800 text-white px-8 py-3 rounded-full hover:border-red-600 transition">
-      Xem thêm phim cũ hơn
-                </button>
-            </div>
-        </section>
-    </main>
+            </section>
 
-    <main id="watch-page" class="hidden pt-24 px-4 md:px-12 pb-20">
-        <div class="flex flex-col lg:flex-row gap-8">
-            <div class="flex-1">
-                <div class="bg-black rounded-3xl overflow-hidden aspect-video border border-gray-800">
-                    <iframe id="main-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+            <section class="px-6 md:px-20 py-16">
+                <div class="flex items-center mb-12">
+                    <h2 id="grid-title" class="text-xl md:text-2xl font-black uppercase flex items-center gap-4">
+                        <span class="w-2 h-8 bg-red-600 rounded-full shadow-[0_0_15px_rgba(229,9,20,0.5)]"></span>
+                        Danh Sách Phim
+                    </h2>
                 </div>
-                <div class="mt-6 p-6 bg-gray-900/50 rounded-3xl">
-                    <h1 id="m-title" class="text-2xl font-black text-red-600 uppercase"></h1>
-                    <p id="m-desc" class="mt-4 text-gray-400 text-sm leading-relaxed"></p>
+                <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8 md:gap-12"></div>
+                <div id="pagination-area" class="flex justify-center mt-20">
+                    <button onclick="loadNextPage()" class="bg-white/5 border border-white/10 hover:border-red-600 hover:bg-red-600 text-white px-12 py-4 rounded-full transition-all font-bold text-xs tracking-widest">
+                        XEM THÊM
+                    </button>
                 </div>
-            </div>
-            <div class="w-full lg:w-80">
-                <div class="bg-gray-900/50 rounded-3xl p-6 border border-gray-800">
-                    <h3 class="font-bold text-sm mb-4">DANH SÁCH TẬP</h3>
-                    <div id="ep-list" class="grid grid-cols-4 gap-2"></div>
-                </div>
-            </div>
-        </div>
-    </main>
+            </section>
+        </main>
 
-<script>
-    // CẤU HÌNH (THAY USERNAME CỦA BẠN VÀO ĐÂY)
-    const GH_USER = "chiasefile9-source"; 
-    const GH_REPO = "movie-archive";
-    const API_BASE = "https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=";
-    const API_DETAIL = "https://ophim1.com/phim/";
-    const IMG_HOST = "https://img.ophim.live/uploads/movies/";
-
-    let currentPage = 1;
-
-    // 1. Hàm hiển thị danh sách phim
-    async function renderMovies(page = 1, append = false) {
-        const grid = document.getElementById('movie-grid');
-        try {
-            const res = await fetch(`${API_BASE}${page}`);
-            const data = await res.json();
-            if(!append) grid.innerHTML = '';
-            
-            data.items.forEach(movie => {
-                grid.innerHTML += createMovieHTML(movie);
-            });
-        } catch (e) { console.error("Lỗi tải phim"); }
-    }
-
-    // 2. Hàm lấy phim từ KHO LƯU TRỮ GITHUB theo ngày
-    async function loadByDate() {
-        const date = document.getElementById('date-picker').value;
-        if(!date) return alert("Chọn ngày đã!");
-
-        const grid = document.getElementById('movie-grid');
-        const title = document.getElementById('grid-title');
-        const pagination = document.getElementById('pagination-area');
-        
-        grid.innerHTML = '<div class="col-span-full text-center">Đang tìm trong kho lưu trữ...</div>';
-        
-        const url = `https://raw.githubusercontent.com/${GH_USER}/${GH_REPO}/main/data/${date}.json`;
-
-        try {
-            const res = await fetch(url);
-            if(!res.ok) throw new Error();
-            const movies = await res.json();
-            
-            grid.innerHTML = '';
-            title.innerText = `Phim cập nhật ngày ${date}`;
-            pagination.classList.add('hidden'); // Ẩn nút xem thêm khi xem theo ngày
-            
-            movies.forEach(movie => { grid.innerHTML += createMovieHTML(movie); });
-        } catch (e) {
-            grid.innerHTML = '<div class="col-span-full text-center text-red-500">Ngày này chưa được lưu trữ hoặc chưa có phim!</div>';
-        }
-    }
-
-    // 3. Hàm tạo HTML cho thẻ phim
-    function createMovieHTML(movie) {
-        return `
-            <div class="movie-card group cursor-pointer transition-all duration-300" onclick="watchMovie('${movie.slug}')">
-                <div class="relative aspect-[2/3] rounded-2xl overflow-hidden border border-gray-800 bg-gray-900">
-                    <img src="${IMG_HOST}${movie.thumb_url}" class="w-full h-full object-cover" loading="lazy">
-                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                        <i class="fa-solid fa-play text-white text-2xl"></i>
+        <main id="watch-page" class="hidden px-4 md:px-20 py-10 animate-fade">
+            <div class="flex flex-col lg:flex-row gap-12">
+                <div class="flex-1">
+                    <div class="bg-black rounded-[32px] overflow-hidden aspect-video shadow-2xl ring-1 ring-white/10">
+                        <iframe id="main-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="mt-10">
+                        <h1 id="m-title" class="text-3xl font-black text-white uppercase tracking-tight mb-6"></h1>
+                        <div class="p-8 bg-white/[0.03] rounded-[32px] text-gray-400 text-sm border border-white/5 shadow-inner" id="m-desc"></div>
                     </div>
                 </div>
-                <div class="mt-3">
-                    <h3 class="font-bold text-[12px] truncate uppercase text-gray-200">${movie.name}</h3>
-                    <p class="text-[10px] text-gray-500 mt-1">${movie.year}</p>
+                <div class="w-full lg:w-[400px]">
+                    <div class="bg-white/[0.04] backdrop-blur-md rounded-[32px] p-8 border border-white/10 sticky top-28 shadow-2xl">
+                        <h3 class="font-bold text-xs mb-8 uppercase tracking-widest text-red-500 flex items-center gap-3">
+                            <i class="fa-solid fa-play-circle text-lg"></i> Danh Sách Tập
+                        </h3>
+                        <div id="ep-list" class="grid grid-cols-4 gap-3 max-h-[500px] overflow-y-auto pr-2"></div>
+                    </div>
                 </div>
-            </div>`;
-    }
+            </div>
+        </main>
+    </div>
 
-    // 4. Logic xem phim và tập phim
-    async function watchMovie(slug) {
-        const res = await fetch(`${API_DETAIL}${slug}`);
-        const data = await res.json();
-        const m = data.movie;
-        const eps = data.episodes[0].server_data;
+    <footer class="py-20 text-center opacity-20 text-[10px] font-bold uppercase tracking-[0.5em]">
+        27NOVVIETSUB &copy; 2026
+    </footer>
 
-        document.getElementById('m-title').innerText = m.name;
-        document.getElementById('m-desc').innerHTML = m.content;
-        document.getElementById('main-player').src = eps[0].link_embed;
+    <script>
+        const API_BASE = "https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=";
+        const API_SEARCH = "https://ophim1.com/v1/api/tim-kiem?keyword=";
+        const API_DETAIL = "https://ophim1.com/phim/";
+        const IMG_HOST = "https://img.ophim.live/uploads/movies/";
+        let currentPage = 1;
 
-        const epList = document.getElementById('ep-list');
-        epList.innerHTML = '';
-        eps.forEach((ep, i) => {
-            const btn = document.createElement('button');
-            btn.className = `bg-gray-800 py-2 rounded text-[10px] font-bold ${i===0?'active-ep':''}`;
-            btn.innerText = ep.name;
-            btn.onclick = () => {
-                document.getElementById('main-player').src = ep.link_embed;
-                document.querySelectorAll('#ep-list button').forEach(b => b.classList.remove('active-ep'));
-                btn.classList.add('active-ep');
-            };
-            epList.appendChild(btn);
-        });
+        async function renderMovies(page = 1, append = false) {
+            try {
+                const res = await fetch(`${API_BASE}${page}`);
+                const data = await res.json();
+                displayResults(data.items, append);
+                // Gọi thông báo mỗi khi tải trang đầu tiên (hoặc khi F5)
+                if (page === 1 && !append) {
+                    showAlwaysNotify(data.items);
+                }
+            } catch (e) { console.error("Lỗi API"); }
+        }
 
-        document.getElementById('home-page').classList.add('hidden');
-        document.getElementById('watch-page').classList.remove('hidden');
-        window.scrollTo(0,0);
-    }
+        // Hàm luôn hiện thông báo
+        function showAlwaysNotify(items) {
+            const today = new Date().toISOString().split('T')[0];
+            const newCount = items.filter(item => item.modified.time.includes(today)).length;
+            const content = document.getElementById('notify-content');
+            
+            if (newCount > 0) {
+                content.innerHTML = `Hôm nay hệ thống đã cập nhật thêm <b class="text-white">${newCount}</b> phim mới. Chúc bạn xem phim vui vẻ tại <b class="text-red-600">27NOVVIETSUB</b>!`;
+            } else {
+                content.innerHTML = `Chào mừng bạn đến với <b class="text-red-600">27NOVVIETSUB</b>. Chúc bạn có những giây phút xem phim thật thư giãn!`;
+            }
+            
+            // Hiện modal không cần kiểm tra localStorage
+            document.getElementById('notification-modal').classList.remove('hidden');
+        }
 
-    function loadNextPage() { currentPage++; renderMovies(currentPage, true); }
-    function showHome() { 
-        document.getElementById('home-page').classList.remove('hidden');
-        document.getElementById('watch-page').classList.add('hidden');
-        document.getElementById('grid-title').innerText = "Phim Mới Cập Nhật";
-        document.getElementById('pagination-area').classList.remove('hidden');
-    }
+        function closeNotify() { 
+            document.getElementById('notification-modal').classList.add('hidden'); 
+        }
 
-    renderMovies(); // Chạy lần đầu
-</script>
+        async function searchMovies() {
+            const keyword = document.getElementById('search-input').value.trim();
+            if (!keyword) return backToHome();
+            const grid = document.getElementById('movie-grid');
+            grid.innerHTML = '<div class="col-span-full text-center py-20 opacity-50">Đang tìm kiếm...</div>';
+            try {
+                const res = await fetch(`${API_SEARCH}${encodeURIComponent(keyword)}&limit=24`);
+                const data = await res.json();
+                document.getElementById('hero-section').classList.add('hidden');
+                document.getElementById('grid-title').innerHTML = `<span class="w-2 h-8 bg-red-600 rounded-full"></span> Kết quả: "${keyword}"`;
+                document.getElementById('pagination-area').classList.add('hidden');
+                displayResults(data.data.items, false);
+            } catch (e) { grid.innerHTML = 'Lỗi tìm kiếm.'; }
+        }
+
+        function displayResults(items, append) {
+            const grid = document.getElementById('movie-grid');
+            if(!append) grid.innerHTML = '';
+            items.forEach(movie => {
+                const thumb = movie.thumb_url.includes('http') ? movie.thumb_url : `${IMG_HOST}${movie.thumb_url}`;
+                grid.innerHTML += `
+                    <div class="movie-card group" onclick="watchMovie('${movie.slug}')">
+                        <div class="relative aspect-[2/3] rounded-[24px] overflow-hidden border border-white/5 bg-gray-900 shadow-2xl">
+                            <img src="${thumb}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                <i class="fa-solid fa-play text-white text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 px-2">
+                            <h3 class="font-bold text-sm truncate group-hover:text-red-600 transition tracking-tight">${movie.name}</h3>
+                            <p class="text-[10px] text-gray-500 mt-1 uppercase font-black opacity-60">${movie.year || '2026'}</p>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        async function watchMovie(slug) {
+            const res = await fetch(`${API_DETAIL}${slug}`);
+            const data = await res.json();
+            const m = data.movie;
+            const eps = data.episodes[0].server_data;
+            document.getElementById('m-title').innerText = m.name;
+            document.getElementById('m-desc').innerHTML = m.content;
+            document.getElementById('main-player').src = eps[0].link_embed;
+            const epList = document.getElementById('ep-list');
+            epList.innerHTML = '';
+            eps.forEach((ep, i) => {
+                const btn = document.createElement('button');
+                btn.className = `bg-white/5 hover:bg-white/10 py-3.5 rounded-2xl text-[11px] font-black transition-all ${i===0?'active-ep':''}`;
+                btn.innerText = ep.name;
+                btn.onclick = () => {
+                    document.getElementById('main-player').src = ep.link_embed;
+                    document.querySelectorAll('#ep-list button').forEach(b => b.classList.remove('active-ep'));
+                    btn.classList.add('active-ep');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                epList.appendChild(btn);
+            });
+            document.getElementById('home-page').classList.add('hidden');
+            document.getElementById('watch-page').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function backToHome() {
+            document.getElementById('watch-page').classList.add('hidden');
+            document.getElementById('home-page').classList.remove('hidden');
+            document.getElementById('hero-section').classList.remove('hidden');
+            document.getElementById('pagination-area').classList.remove('hidden');
+            document.getElementById('search-input').value = '';
+            document.getElementById('grid-title').innerHTML = `<span class="w-2 h-8 bg-red-600 rounded-full"></span> Phim Mới Cập Nhật`;
+            currentPage = 1;
+            renderMovies(1, false);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function loadNextPage() { currentPage++; renderMovies(currentPage, true); }
+        renderMovies();
+    </script>
 </body>
 </html>
