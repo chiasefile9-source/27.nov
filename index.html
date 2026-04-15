@@ -55,7 +55,6 @@
         .ep-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); transition: 0.2s; }
         .active-ep { background: var(--primary) !important; border-color: var(--primary) !important; box-shadow: 0 0 15px rgba(229, 9, 20, 0.4); }
 
-        /* CSS NÚT HỖ TRỢ */
         .support-btn {
             position: fixed; bottom: 30px; right: 30px; z-index: 2000;
             width: 55px; height: 55px; background: var(--primary);
@@ -66,6 +65,16 @@
         .support-btn:hover { transform: scale(1.1) rotate(15deg); }
         .support-btn i { font-size: 20px; color: white; }
 
+        /* CSS NÚT CHIA SẺ */
+        .share-trigger {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 20px; border-radius: 14px;
+            font-size: 12px; font-weight: 800; cursor: pointer;
+            transition: 0.3s; display: flex; align-items: center; gap: 8px;
+        }
+        .share-trigger:hover { background: #fff; color: #000; }
+
         @media (max-width: 768px) { 
             .content-wrapper { padding-top: 220px; }
             .hero-gradient { display: none; }
@@ -75,23 +84,45 @@
 </head>
 <body>
 
-    <div id="support-modal" class="fixed inset-0 z-[3000] hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade">
+    <div id="share-modal" class="fixed inset-0 z-[4000] hidden flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+        <div class="bg-[#151515] border border-white/10 w-full max-w-md rounded-[2.5rem] overflow-hidden relative animate-fade">
+            <div id="share-banner" class="h-48 w-full bg-cover bg-center relative">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#151515] to-transparent"></div>
+            </div>
+            <div class="px-8 pb-8 -mt-12 relative">
+                <div class="flex justify-center mb-4">
+                    <img id="share-poster" src="" class="w-24 h-36 object-cover rounded-xl shadow-2xl border-2 border-white/10">
+                </div>
+                <h3 id="share-title" class="text-xl font-black text-center uppercase mb-2">Tên Phim</h3>
+                <p class="text-gray-500 text-[10px] text-center uppercase tracking-widest mb-6">Chia sẻ phim hay đến bạn bè</p>
+                
+                <div class="bg-black/50 border border-white/10 rounded-2xl p-2 flex items-center mb-6">
+                    <input id="share-url" type="text" readonly class="bg-transparent border-none outline-none text-xs px-3 w-full text-gray-400">
+                    <button onclick="copyShareLink()" class="bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold px-4 py-2 rounded-xl transition">COPY</button>
+                </div>
+
+                <div class="flex justify-center gap-4">
+                    <button onclick="toggleShare()" class="text-gray-500 text-xs font-bold uppercase hover:text-white transition">Đóng lại</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="support-modal" class="fixed inset-0 z-[3000] hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
         <div class="bg-[#151515] border border-white/10 w-full max-w-sm rounded-[2.5rem] p-8 text-center relative">
             <div class="w-16 h-16 bg-red-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class="fa-solid fa-headset text-red-600 text-2xl"></i>
             </div>
             <h3 class="text-xl font-black uppercase mb-4">Trung Tâm Hỗ Trợ</h3>
             <p class="text-gray-400 text-sm mb-6 leading-relaxed">Nếu phim gặp lỗi, không tải được tập mới hoặc có đóng góp ý kiến, vui lòng liên hệ với chúng tôi.</p>
-            
             <div class="flex flex-col gap-3">
-                <a href="https:" target="_blank" class="bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2 border border-blue-600/20">
+                <a href="#" class="bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2 border border-blue-600/20">
                     <i class="fa-brands fa-telegram"></i> Telegram Hỗ Trợ
                 </a>
                 <button onclick="location.reload()" class="bg-white/5 hover:bg-white/10 text-white py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2 border border-white/10">
                     <i class="fa-solid fa-rotate"></i> Tải lại trang
                 </button>
             </div>
-
             <button onclick="toggleSupport()" class="mt-6 text-gray-500 text-xs font-bold uppercase tracking-widest hover:text-white transition">Đóng lại</button>
         </div>
     </div>
@@ -112,9 +143,7 @@
                     <button onclick="loadCat('phim-bo', this)" class="menu-item px-2">Phim Bộ</button>
                     <button onclick="loadCat('phim-le', this)" class="menu-item px-2">Phim Lẻ</button>
                     <button onclick="loadCat('hoat-hinh', this)" class="menu-item px-2">Hoạt Hình</button>
-                    
                     <div class="h-5 w-[1px] bg-white/20 hidden md:block"></div>
-                    
                     <select id="country-filter" onchange="applyFilter()" class="filter-select">
                         <option value="">Tất cả quốc gia</option>
                         <option value="trung-quoc">Trung Quốc</option>
@@ -123,7 +152,6 @@
                         <option value="thai-lan">Thái Lan</option>
                         <option value="nhat-ban">Nhật Bản</option>
                     </select>
-
                     <select id="lang-filter" onchange="applyFilter()" class="filter-select">
                         <option value="">Tất cả định dạng</option>
                         <option value="Thuyết Minh">Thuyết Minh</option>
@@ -143,7 +171,7 @@
     </nav>
 
     <div class="content-wrapper">
-        <main id="home-page" class="animate-fade">
+        <main id="home-page">
             <section id="hero-section" class="hero-gradient h-[30vh] flex items-center px-10 mb-10">
                 <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tighter">PHIM MỚI <br><span class="text-red-600">2026</span></h1>
             </section>
@@ -152,23 +180,26 @@
                 <div class="flex items-center justify-between mb-10 border-l-4 border-red-600 pl-4">
                     <h2 id="grid-title" class="text-2xl font-black uppercase tracking-tight text-white">Phim Mới Cập Nhật</h2>
                 </div>
-
                 <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6"></div>
-                
                 <div id="pagination-area" class="flex justify-center mt-16 pb-20">
                     <button id="load-more-btn" onclick="loadNextPage()" class="bg-white/5 border border-white/10 hover:bg-red-600 px-12 py-4 rounded-xl transition font-black text-[11px] uppercase tracking-widest">Xem thêm phim</button>
                 </div>
             </section>
         </main>
 
-        <main id="watch-page" class="hidden px-4 md:px-20 py-6 animate-fade">
+        <main id="watch-page" class="hidden px-4 md:px-20 py-6">
             <div class="flex flex-col lg:flex-row gap-8">
                 <div class="flex-1">
                     <div class="bg-black rounded-3xl overflow-hidden aspect-video shadow-2xl ring-1 ring-white/10">
                         <iframe id="main-player" src="" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
                     </div>
                     <div class="mt-8">
-                        <h1 id="m-title" class="text-3xl font-black uppercase mb-4"></h1>
+                        <div class="flex items-center justify-between mb-4 flex-wrap gap-4">
+                            <h1 id="m-title" class="text-3xl font-black uppercase"></h1>
+                            <button onclick="toggleShare()" class="share-trigger">
+                                <i class="fa-solid fa-share-nodes"></i> CHIA SẺ
+                            </button>
+                        </div>
                         <div id="m-meta" class="flex gap-3 mb-6"></div>
                         <div id="m-desc" class="p-6 bg-white/[0.02] rounded-2xl text-gray-400 text-sm leading-relaxed border border-white/5"></div>
                     </div>
@@ -198,10 +229,38 @@
         let currentSlug = '';
         let movieCache = null;
 
-        // JS CHO NÚT HỖ TRỢ
         function toggleSupport() {
-            const modal = document.getElementById('support-modal');
+            document.getElementById('support-modal').classList.toggle('hidden');
+        }
+
+        // --- CHỨC NĂNG CHIA SẺ MỚI ---
+        function toggleShare() {
+            const modal = document.getElementById('share-modal');
+            const isHidden = modal.classList.contains('hidden');
+            
+            if(isHidden && movieCache) {
+                const m = movieCache.movie;
+                document.getElementById('share-title').innerText = m.name;
+                document.getElementById('share-poster').src = m.thumb_url;
+                document.getElementById('share-banner').style.backgroundImage = `url('${m.poster_url}')`;
+                
+                // Giả lập link rút gọn bằng cách lấy URL hiện tại
+                // Trong thực tế bạn có thể gọi API rút gọn link ở đây
+                document.getElementById('share-url').value = window.location.href;
+            }
             modal.classList.toggle('hidden');
+        }
+
+        function copyShareLink() {
+            const copyText = document.getElementById("share-url");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); 
+            navigator.clipboard.writeText(copyText.value);
+            
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "DONE!";
+            setTimeout(() => btn.innerText = originalText, 2000);
         }
 
         async function fetchMovies(page = 1, append = false) {
@@ -214,28 +273,22 @@
                 const res = await fetch(url);
                 const data = await res.json();
                 const items = (currentMode === 'home') ? data.items : data.data.items;
-                
                 const langFilter = document.getElementById('lang-filter').value;
                 let finalItems = items;
                 if(langFilter) {
                     finalItems = items.filter(m => m.lang.toLowerCase().includes(langFilter.toLowerCase()));
                 }
-
                 renderMovieGrid(finalItems, append);
-            } catch (e) { 
-                console.error("Lỗi API"); 
-            }
+            } catch (e) { console.error("Lỗi API"); }
         }
 
         function renderMovieGrid(items, append) {
             const grid = document.getElementById('movie-grid');
             if (!append) grid.innerHTML = '';
-            
             if (items.length === 0) {
-                grid.innerHTML = '<p class="col-span-full text-center py-20 text-gray-500 font-bold">Không tìm thấy phim phù hợp với bộ lọc.</p>';
+                grid.innerHTML = '<p class="col-span-full text-center py-20 text-gray-500 font-bold">Không tìm thấy phim.</p>';
                 return;
             }
-
             items.forEach(movie => {
                 const thumb = movie.thumb_url.includes('http') ? movie.thumb_url : `${IMG_HOST}${movie.thumb_url}`;
                 grid.innerHTML += `
@@ -257,17 +310,8 @@
 
         function applyFilter() {
             const country = document.getElementById('country-filter').value;
-            const lang = document.getElementById('lang-filter').value;
-            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('menu-active'));
-            if(country) {
-                currentMode = 'country';
-                currentSlug = country;
-            } else {
-                currentMode = 'home';
-            }
-            let titleText = country ? `Phim ${country.replace('-', ' ')}` : "Phim Mới Cập Nhật";
-            if(lang) titleText += ` (${lang})`;
-            document.getElementById('grid-title').innerText = titleText;
+            if(country) { currentMode = 'country'; currentSlug = country; } 
+            else { currentMode = 'home'; }
             currentPage = 1;
             fetchMovies(1, false);
             backToHome();
@@ -276,11 +320,7 @@
         function loadCat(slug, el) {
             document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('menu-active'));
             el.classList.add('menu-active');
-            document.getElementById('country-filter').value = "";
-            document.getElementById('lang-filter').value = "";
-            currentMode = 'cat';
-            currentSlug = slug;
-            document.getElementById('grid-title').innerText = el.innerText;
+            currentMode = 'cat'; currentSlug = slug;
             currentPage = 1;
             fetchMovies(1, false);
             backToHome();
@@ -291,9 +331,7 @@
             if(!kw) return;
             const res = await fetch(`${API_SEARCH}${kw}`);
             const data = await res.json();
-            document.getElementById('grid-title').innerText = `Tìm kiếm: ${kw}`;
             renderMovieGrid(data.data.items, false);
-            document.getElementById('load-more-btn').classList.add('hidden');
             backToHome();
         }
 
