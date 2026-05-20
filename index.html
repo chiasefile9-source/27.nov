@@ -7,97 +7,207 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
         
         :root { 
-            --primary: #00acc1; /* Màu xanh đặc trưng CoBePhim */
-            --bg-body: #1a1a1a;
-            --bg-card: #242424;
-            --text-main: #eeeeee;
+            --primary: #00e5ff; 
+            --primary-glow: rgba(0, 229, 255, 0.4);
+            --glass-bg: rgba(20, 20, 25, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
 
         body { 
-            background-color: var(--bg-body); 
-            color: var(--text-main); 
-            font-family: 'Inter', sans-serif; 
-            margin: 0; 
+            background-color: #0b0c10;
+            color: #f1f5f9; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            margin: 0;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        /* Tối ưu thanh điều hướng */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(0,229,255,0.15) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -10%;
+            right: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(147,51,234,0.12) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(120%);
+            -webkit-backdrop-filter: blur(16px) saturate(120%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
         .header {
-            background: rgba(20, 20, 20, 0.95);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(11, 12, 16, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
             position: fixed; top: 0; width: 100%; z-index: 1000;
         }
 
         .nav-link {
-            color: #ccc;
-            font-weight: 500;
-            transition: 0.3s;
-            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 13px;
+            letter-spacing: 0.05em;
+            position: relative;
         }
-        .nav-link:hover, .menu-active { color: var(--primary); }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        .nav-link:hover::after, .menu-active::after { width: 100%; }
+        .nav-link:hover, .menu-active { color: #fff; text-shadow: 0 0 12px var(--primary-glow); }
 
         .search-box {
-            background: #2a2a2a;
-            border-radius: 4px;
-            padding: 5px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 99px;
+            padding: 6px 16px;
             display: flex;
             align-items: center;
+            transition: all 0.3s;
+        }
+        .search-box:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+            background: rgba(255, 255, 255, 0.08);
         }
 
-        /* Movie Card phong cách CoBePhim */
         .movie-card {
             position: relative;
-            border-radius: 4px;
+            border-radius: 12px;
             overflow: hidden;
-            transition: 0.3s;
-            background: var(--bg-card);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .movie-card:hover { transform: scale(1.03); z-index: 10; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .movie-card:hover { 
+            transform: translateY(-6px) scale(1.02); 
+            z-index: 10; 
+            border-color: rgba(0, 229, 255, 0.3);
+            box-shadow: 0 15px 30px rgba(0, 229, 255, 0.15), 0 5px 15px rgba(0,0,0,0.4); 
+        }
         
         .card-info {
             position: absolute;
             bottom: 0; left: 0; right: 0;
-            padding: 20px 10px 10px;
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+            padding: 24px 12px 12px;
+            background: linear-gradient(to top, rgba(11,12,16,0.95) 0%, rgba(11,12,16,0.6) 50%, transparent 100%);
+            backdrop-filter: blur(2px);
         }
 
         .badge-lang {
-            position: absolute; top: 8px; left: 8px;
-            background: var(--primary);
-            font-size: 10px; font-weight: bold;
-            padding: 2px 6px; border-radius: 2px;
+            position: absolute; top: 10px; left: 10px;
+            background: linear-gradient(135deg, #00e5ff 0%, #008acc 100%);
+            color: #0b0c10;
+            box-shadow: 0 4px 12px var(--primary-glow);
+            font-size: 10px; font-weight: 800;
+            padding: 3px 8px; border-radius: 6px;
+            letter-spacing: 0.03em;
+            z-index: 2;
         }
 
-        /* Player & Sidebar */
-        .server-btn {
-            background: #333;
-            color: #fff;
-            padding: 6px 12px;
-            border-radius: 3px;
-            font-size: 12px;
-            transition: 0.3s;
+        /* Top Movie Item Glass Style */
+        .top-movie-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.3s ease;
         }
-        .server-btn.active-ep { background: var(--primary); }
+        .top-movie-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(0, 229, 255, 0.2);
+            transform: translateX(4px);
+        }
 
-        .episode-item {
-            background: #333;
+        .top-number {
+            font-size: 24px;
+            font-weight: 900;
+            font-style: italic;
+            min-width: 32px;
             text-align: center;
-            padding: 8px;
-            font-size: 13px;
-            border-radius: 3px;
-            cursor: pointer;
+            background: linear-gradient(135deg, #94a3b8 0%, #475569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .episode-item:hover { background: #444; }
-        .episode-item.active-ep { background: var(--primary); color: white; }
+        .top-1 .top-number {
+            background: linear-gradient(135deg, #ffe600 0%, #ff8800 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(255,136,0,0.2);
+        }
+        .top-2 .top-number {
+            background: linear-gradient(135deg, #00e5ff 0%, #008acc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .top-3 .top-number {
+            background: linear-gradient(135deg, #ff4d00 0%, #ff0077 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-        .content-container { padding-top: 80px; }
+        .server-btn, .episode-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #cbd5e1;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .server-btn:hover, .episode-item:hover { 
+            background: rgba(255, 255, 255, 0.1); 
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        .server-btn.active-ep, .episode-item.active-ep { 
+            background: linear-gradient(135deg, #00e5ff 0%, #00b4cc 100%); 
+            color: #0b0c10;
+            font-weight: 700;
+            box-shadow: 0 0 15px var(--primary-glow);
+            border-color: transparent;
+        }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #1a1a1a; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        .content-container { padding-top: 88px; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0b0c10; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; border: 2px solid #0b0c10; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
     </style>
 </head>
@@ -106,11 +216,11 @@
     <!-- Header -->
     <header class="header">
         <div class="container mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-8">
-                <a href="/" class="text-2xl font-bold tracking-tighter flex items-center gap-2" style="color: var(--primary);">
+            <div class="flex items-center gap-10">
+                <a href="/" class="text-2xl font-black tracking-tight flex items-center gap-2" style="color: var(--primary); text-shadow: 0 0 15px var(--primary-glow);">
                     <i class="fa-solid fa-film"></i> 27NOV<span class="text-white">PHIM</span>
                 </a>
-                <nav class="hidden md:flex gap-6 uppercase">
+                <nav class="hidden md:flex gap-8 uppercase font-bold">
                     <button onclick="loadCat('phim-bo', this)" class="nav-link">Phim Bộ</button>
                     <button onclick="loadCat('phim-le', this)" class="nav-link">Phim Lẻ</button>
                     <button onclick="loadCat('hoat-hinh', this)" class="nav-link">Hoạt Hình</button>
@@ -119,15 +229,15 @@
 
             <div class="flex items-center gap-4">
                 <div class="search-box hidden sm:flex">
-                    <input type="text" id="search-input" placeholder="Tìm tên phim..." class="bg-transparent outline-none text-sm w-48" onkeyup="if(event.key === 'Enter') searchMovies()">
-                    <i class="fa-solid fa-magnifying-glass text-gray-500 cursor-pointer" onclick="searchMovies()"></i>
+                    <input type="text" id="search-input" placeholder="Tìm tên phim..." class="bg-transparent outline-none text-sm w-48 text-white placeholder-gray-400" onkeyup="if(event.key === 'Enter') searchMovies()">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400 hover:text-[var(--primary)] cursor-pointer transition" onclick="searchMovies()"></i>
                 </div>
                 <div class="flex gap-2">
-                    <select id="country-filter" onchange="applyFilter()" class="bg-[#333] text-[12px] px-2 py-1 rounded outline-none border-none">
-                        <option value="">Quốc gia</option>
-                        <option value="trung-quoc">Trung Quốc</option>
-                        <option value="han-quoc">Hàn Quốc</option>
-                        <option value="au-my">Âu Mỹ</option>
+                    <select id="country-filter" onchange="applyFilter()" class="bg-white/5 border border-white/10 text-[13px] px-3 py-1.5 rounded-full outline-none text-gray-200 cursor-pointer hover:bg-white/10 transition">
+                        <option value="" class="bg-[#141419]">Quốc gia</option>
+                        <option value="trung-quoc" class="bg-[#141419]">Trung Quốc</option>
+                        <option value="han-quoc" class="bg-[#141419]">Hàn Quốc</option>
+                        <option value="au-my" class="bg-[#141419]">Âu Mỹ</option>
                     </select>
                 </div>
             </div>
@@ -137,23 +247,45 @@
     <div class="content-container">
         <!-- Home Page -->
         <main id="home-page" class="container mx-auto px-4 py-6">
-            <div class="flex items-center justify-between mb-6 border-b border-gray-800 pb-2">
-                <h2 id="grid-title" class="text-lg font-semibold uppercase tracking-wide border-l-4 border-[#00acc1] pl-3">Phim Mới Cập Nhật</h2>
-                <div class="flex gap-2">
-                    <select id="lang-filter" onchange="applyFilter()" class="bg-transparent text-sm text-gray-400 outline-none">
-                        <option value="">Tất cả định dạng</option>
-                        <option value="Thuyết Minh">Thuyết Minh</option>
-                        <option value="Vietsub">Vietsub</option>
-                    </select>
+            <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+                
+                <!-- Cột chính: Danh sách phim (Chiếm 3/4 trên màn hình lớn) -->
+                <div class="xl:col-span-3">
+                    <div class="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
+                        <h2 id="grid-title" class="text-xl font-bold uppercase tracking-wider flex items-center gap-2">
+                            <span class="w-1 h-6 rounded-full bg-[var(--primary)] inline-block shadow-[0_0_8px_var(--primary)]"></span>
+                            Phim Mới Cập Nhật
+                        </h2>
+                        <div class="flex gap-2">
+                            <select id="lang-filter" onchange="applyFilter()" class="bg-transparent text-sm text-gray-400 outline-none cursor-pointer hover:text-white transition">
+                                <option value="" class="bg-[#141419]">Tất cả định dạng</option>
+                                <option value="Thuyết Minh" class="bg-[#141419]">Thuyết Minh</option>
+                                <option value="Vietsub" class="bg-[#141419]">Vietsub</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-5">
+                        <!-- Movie cards will be injected here -->
+                    </div>
+
+                    <div class="flex justify-center mt-14">
+                        <button onclick="loadNextPage()" class="bg-white/5 border border-white/10 hover:bg-white/10 text-white hover:border-[var(--primary)] hover:shadow-[0_0_15px_var(--primary-glow)] px-10 py-3 rounded-full text-sm font-semibold tracking-wide transition-all duration-300">XEM THÊM</button>
+                    </div>
                 </div>
-            </div>
 
-            <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                <!-- Movie cards will be injected here -->
-            </div>
+                <!-- Cột phụ: Bảng xếp hạng Top Phim (Chiếm 1/4) -->
+                <div class="xl:col-span-1">
+                    <div class="glass-panel p-5 rounded-2xl sticky top-24">
+                        <h3 class="text-base font-bold uppercase tracking-wider mb-5 text-white flex items-center gap-2">
+                            <i class="fa-solid fa-fire-flame-curved text-[var(--primary)] shadow-[0_0_10px_var(--primary-glow)]"></i> Top Phim Hot
+                        </h3>
+                        <div id="top-movie-list" class="flex flex-col gap-3">
+                            <!-- Top movies will be injected here -->
+                        </div>
+                    </div>
+                </div>
 
-            <div class="flex justify-center mt-12">
-                <button onclick="loadNextPage()" class="bg-[#333] hover:bg-[#444] px-8 py-2 rounded text-sm font-medium transition">XEM THÊM</button>
             </div>
         </main>
 
@@ -161,54 +293,60 @@
         <main id="watch-page" class="hidden container mx-auto px-4 py-4">
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div class="lg:col-span-3">
-                    <div class="bg-black rounded overflow-hidden shadow-2xl relative" style="padding-top: 56.25%;">
+                    <div class="bg-black/40 rounded-2xl overflow-hidden shadow-2xl relative border border-white/5 shadow-black/80" style="padding-top: 56.25%;">
                         <iframe id="main-player" src="" class="absolute top-0 left-0 w-full h-full" frameborder="0" allowfullscreen></iframe>
                     </div>
                     
-                    <div class="mt-4 bg-[#242424] p-4 rounded">
-                        <div class="flex justify-between items-start">
-                            <h1 id="m-title" class="text-xl md:text-2xl font-bold text-white mb-2"></h1>
-                            <button onclick="toggleShare()" class="text-xs bg-[#333] px-3 py-1 rounded hover:bg-gray-600"><i class="fa-solid fa-share"></i> Chia sẻ</button>
+                    <div class="mt-6 glass-panel p-6 rounded-2xl">
+                        <div class="flex justify-between items-start gap-4 flex-wrap sm:flex-nowrap">
+                            <h1 id="m-title" class="text-xl md:text-3xl font-extrabold text-white tracking-tight"></h1>
+                            <button onclick="toggleShare()" class="text-xs bg-white/5 border border-white/10 px-4 py-2 rounded-full hover:bg-white/10 hover:text-[var(--primary)] transition flex items-center gap-1.5 whitespace-nowrap">
+                                <i class="fa-solid fa-share"></i> Chia sẻ
+                            </button>
                         </div>
-                        <div id="m-meta" class="flex gap-2 mb-4 text-xs"></div>
-                        <div id="m-desc" class="text-gray-400 text-sm leading-relaxed border-t border-gray-700 pt-4 mt-2"></div>
+                        <div id="m-meta" class="flex items-center gap-3 mt-3 text-xs font-semibold text-gray-400"></div>
+                        <div id="m-desc" class="text-gray-300 text-sm leading-relaxed border-t border-white/5 pt-5 mt-5"></div>
                     </div>
                 </div>
 
                 <div class="lg:col-span-1">
-                    <div class="bg-[#242424] p-4 rounded">
-                        <h3 class="text-sm font-bold uppercase mb-3 text-gray-300">Chọn Server</h3>
+                    <div class="glass-panel p-5 rounded-2xl sticky top-24">
+                        <h3 class="text-xs font-bold uppercase tracking-wider mb-4 text-gray-400 flex items-center gap-2">
+                            <i class="fa-solid fa-server text-[var(--primary)]"></i> Chọn Server
+                        </h3>
                         <div id="server-list" class="flex flex-wrap gap-2 mb-6"></div>
 
-                        <h3 class="text-sm font-bold uppercase mb-3 text-gray-300">Danh sách tập</h3>
-                        <div id="ep-list" class="grid grid-cols-4 gap-2 max-h-[300px] overflow-y-auto pr-2"></div>
+                        <h3 class="text-xs font-bold uppercase tracking-wider mb-4 text-gray-400 flex items-center gap-2">
+                            <i class="fa-solid fa-list-ol text-[var(--primary)]"></i> Danh sách tập
+                        </h3>
+                        <div id="ep-list" class="grid grid-cols-4 gap-2 max-h-[350px] overflow-y-auto pr-1"></div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Modals (Giữ nguyên logic của bạn) -->
-    <div id="share-modal" class="fixed inset-0 z-[4000] hidden flex items-center justify-center p-4 bg-black/90">
-        <div class="bg-[#242424] w-full max-w-sm rounded p-6 shadow-2xl">
-            <h3 class="text-center font-bold mb-4 uppercase">Chia sẻ phim</h3>
-            <img id="share-poster" src="" class="w-32 h-44 mx-auto rounded shadow-lg mb-4 object-cover">
-            <div class="bg-black/40 p-2 rounded flex gap-2">
-                <input id="share-url" type="text" readonly class="bg-transparent text-[10px] w-full outline-none text-gray-400">
-                <button onclick="copyShareLink()" id="copy-btn" class="bg-[#00acc1] text-xs px-3 py-1 rounded font-bold">COPY</button>
+    <!-- Modals -->
+    <div id="share-modal" class="fixed inset-0 z-[4000] hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div class="glass-panel w-full max-w-sm rounded-2xl p-6 shadow-2xl border border-white/10">
+            <h3 class="text-center font-bold mb-5 uppercase tracking-wide text-white">Chia sẻ phim</h3>
+            <img id="share-poster" src="" class="w-32 h-44 mx-auto rounded-xl shadow-2xl mb-5 object-cover border border-white/10">
+            <div class="bg-black/30 border border-white/5 p-2 rounded-xl flex gap-2 items-center">
+                <input id="share-url" type="text" readonly class="bg-transparent text-[11px] w-full outline-none text-gray-400 px-2 font-mono">
+                <button onclick="copyShareLink()" id="copy-btn" class="bg-gradient-to-r from-[#00e5ff] to-[#008acc] text-black text-xs px-4 py-2 rounded-lg font-bold shadow-lg shadow-cyan-500/20 active:scale-95 transition">COPY</button>
             </div>
-            <button onclick="toggleShare()" class="w-full mt-4 text-xs text-gray-500 hover:text-white">ĐÓNG</button>
+            <button onclick="toggleShare()" class="w-full mt-5 text-xs font-semibold text-gray-400 hover:text-white transition uppercase tracking-wider">ĐÓNG</button>
         </div>
     </div>
 
     <!-- Support Button -->
     <div class="fixed bottom-6 right-6 z-50">
-        <button onclick="toggleSupport()" class="bg-[#00acc1] w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition">
+        <button onclick="toggleSupport()" class="bg-gradient-to-tr from-[#00e5ff] to-[#008acc] w-14 h-14 rounded-full shadow-[0_8px_24px_rgba(0,229,255,0.4)] flex items-center justify-center text-black hover:scale-110 active:scale-95 transition duration-300">
             <i class="fa-solid fa-headset text-xl"></i>
         </button>
     </div>
 
-    <!-- Script Logic (Giữ nguyên 100%) -->
+    <!-- Script Logic -->
     <script>
         const API_HOME = "https://ophim1.com/danh-sach/phim-moi-cap-nhat?page=";
         const API_CAT = "https://ophim1.com/v1/api/danh-sach/";
@@ -257,6 +395,11 @@
                 if(langFilter) finalItems = items.filter(m => m.lang.includes(langFilter));
                 
                 renderMovies(finalItems, append);
+
+                // Tự động lấy danh sách Top Phim từ trang 1 nếu chưa có dữ liệu
+                if(!append && page === 1) {
+                    renderTopMovies(items.slice(0, 7)); // Lấy 7 phim đầu làm danh sách thịnh hành
+                }
             } catch (e) { console.error(e); }
         }
 
@@ -277,6 +420,24 @@
             });
         }
 
+        // Hàm Render danh sách Top Phim bên Sidebar
+        function renderTopMovies(items) {
+            const topList = document.getElementById('top-movie-list');
+            topList.innerHTML = '';
+            items.forEach((m, index) => {
+                const thumb = m.thumb_url.includes('http') ? m.thumb_url : `${IMG_HOST}${m.thumb_url}`;
+                topList.innerHTML += `
+                <div class="top-movie-item top-${index + 1} cursor-pointer" onclick="watchMovie('${m.slug}')">
+                    <div class="top-number">${index + 1}</div>
+                    <img src="${thumb}" class="w-10 h-14 rounded-md object-cover border border-white/5 flex-shrink-0">
+                    <div class="overflow-hidden">
+                        <h4 class="font-bold text-xs truncate text-white hover:text-[var(--primary)] transition">${m.name}</h4>
+                        <p class="text-[10px] text-gray-400 mt-0.5">${m.lang} • ${m.year || '2024'}</p>
+                    </div>
+                </div>`;
+            });
+        }
+
         async function watchMovie(slug, push = true) {
             const res = await fetch(`${API_DETAIL}${slug}`);
             const data = await res.json();
@@ -289,10 +450,10 @@
             document.getElementById('m-title').innerText = m.name;
             document.getElementById('m-desc').innerHTML = m.content;
             document.getElementById('m-meta').innerHTML = `
-                <span class="text-[#00acc1] font-bold">${m.year}</span>
-                <span class="text-gray-500">|</span>
-                <span class="text-gray-300">${m.quality}</span>
-                <span class="text-gray-500">|</span>
+                <span class="text-[#00e5ff] font-bold">${m.year}</span>
+                <span class="text-gray-600">|</span>
+                <span class="bg-white/5 px-2 py-0.5 rounded text-gray-300">${m.quality}</span>
+                <span class="text-gray-600">|</span>
                 <span class="text-gray-300">${m.lang}</span>
             `;
 
@@ -315,7 +476,7 @@
             const epList = document.getElementById('ep-list'); epList.innerHTML = '';
             movieCache.episodes[idx].server_data.forEach((ep, i) => {
                 const btn = document.createElement('div');
-                btn.className = `episode-item`;
+                btn.className = `episode-item cursor-pointer`;
                 btn.innerText = ep.name;
                 if(i===0) { 
                     document.getElementById('main-player').src = ep.link_embed; 
